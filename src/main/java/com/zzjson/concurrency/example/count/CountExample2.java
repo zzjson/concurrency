@@ -1,18 +1,19 @@
-package com.zzjson.concurrency;
+package com.zzjson.concurrency.example.count;
 
-import com.zzjson.concurrency.annoations.NotThreadSafe;
+import com.zzjson.concurrency.annoations.ThreadSafe;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * <p>****************************************************************************</p>
  * <p><b>Copyright © 2010-2018 rollBall team All Rights Reserved<b></p>
  * <ul style="margin:15px;">
- * <li>Description : com.zzjson.concurrency</li>
+ * <li>Description : com.zzjson.concurrency.example.count</li>
  * <li>Version     : 1.0</li>
  * <li>Creation    : 2018年07月05日</li>
  * <li>@author     : zzy0_0</li>
@@ -20,15 +21,15 @@ import java.util.concurrent.Semaphore;
  * <p>****************************************************************************</p>
  */
 @Slf4j
-@NotThreadSafe
-public class ConcurrencyTest {
+@ThreadSafe
+public class CountExample2 {
     //并发总数
-    public static int clinetTotal = 1000;
+    public static int clientTotal = 5000;
 
     // 同时并发执行的线程数
     public static int threadTotal = 50;
 
-    public static int count = 0;
+    public static AtomicInteger count = new AtomicInteger(0);
 
     public static void main(String[] args) throws InterruptedException {
         //线程池
@@ -36,8 +37,8 @@ public class ConcurrencyTest {
         //信号量
         final Semaphore semaphore = new Semaphore(threadTotal);
         //计数器闭锁
-        final CountDownLatch countDownLatch = new CountDownLatch(clinetTotal);
-        for (int i = 0; i < clinetTotal; i++) {
+        final CountDownLatch countDownLatch = new CountDownLatch(clientTotal);
+        for (int i = 0; i < clientTotal; i++) {
             executorService.execute(() -> {
                 //执行
                 try {
@@ -62,6 +63,10 @@ public class ConcurrencyTest {
     }
 
     private static void add() {
-        count++;
+        //先获取后增加
+        //count.getAndIncrement();
+        //先增加后获取
+        count.incrementAndGet();
+
     }
 }
